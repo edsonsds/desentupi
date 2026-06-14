@@ -1,0 +1,8 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/desentupidora-:slug", "destination": "/template-bairro.html?b=:slug" },
+    { "source": "/admin", "destination": "/admin-site.html" },
+    { "source": "/", "destination": "/template-bairro.html" }
+  ]
+}
