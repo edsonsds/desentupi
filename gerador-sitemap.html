@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Gerador de Sitemap</title>
+<style>body{font-family:monospace;padding:20px;background:#020812;color:#e2e8f0}textarea{width:100%;min-height:400px;background:#0a1628;color:#e2e8f0;border:1px solid #1a3a60;padding:14px;font-family:monospace;font-size:12px;border-radius:8px}h1{color:#3b82f6}button{background:#2563eb;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:14px}</style>
+</head>
+<body>
+<h1>🗺️ Gerador de sitemap.xml</h1>
+<p>Substitua <code>https://seusite.com.br</code> pela URL real depois de hospedar.</p>
+<button onclick="gerar()">Gerar sitemap</button>
+<button onclick="copiar()">📋 Copiar</button>
+<textarea id="output"></textarea>
+<script src="bairros.js"></script>
+<script>
+function gerar() {
+  const base = 'https://seusite.com.br';
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  xml += `  <url><loc>${base}/</loc><priority>1.0</priority></url>\n`;
+  window.BAIRROS.forEach(b => {
+    xml += `  <url><loc>${base}/desentupidora-${b.slug}</loc><priority>0.8</priority></url>\n`;
+  });
+  xml += '</urlset>';
+  document.getElementById('output').value = xml;
+}
+function copiar() {
+  document.getElementById('output').select();
+  document.execCommand('copy');
+  alert('Copiado!');
+}
+gerar();
+</script>
+</body>
+</html>

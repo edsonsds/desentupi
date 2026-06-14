@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0;url=/template-bairro.html">
+<title>Desentupi Pro — Redirecionando</title>
+</head>
+<body>
+<script>
+  // Se tiver hash ou path, redireciona para a página do bairro
+  const path = window.location.pathname.replace(/^\//, '').replace(/\.html$/, '');
+  const match = path.match(/desentupidora-(.+)/);
+  if (match) {
+    window.location.href = `/template-bairro.html?b=${match[1]}`;
+  } else {
+    // Página inicial sem bairro
+    window.location.href = `/template-bairro.html`;
+  }
+</script>
+</body>
+</html>

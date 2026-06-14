@@ -1,0 +1,9 @@
+[[redirects]]
+  from = "/desentupidora-:slug"
+  to = "/template-bairro.html?b=:slug"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin-site.html"
+  status = 200
