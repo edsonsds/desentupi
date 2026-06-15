@@ -723,10 +723,18 @@ function openWhatsApp(e) {
   if (e) e.preventDefault();
   const bairro = getCurrentBairro();
   const msg = encodeURIComponent(bairro?`Olá! Preciso de uma desentupidora ${bairro.cidade==='São Paulo'?'na '+bairro.nome:'em '+bairro.nome}.`:'Olá! Preciso de uma desentupidora.');
+  // Detecta mobile e usa formato correto
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  function buildUrl(phone) {
+    // Em mobile abre o app direto, em desktop abre web
+    return isMobile
+      ? `https://api.whatsapp.com/send?phone=${phone}&text=${msg}`
+      : `https://web.whatsapp.com/send?phone=${phone}&text=${msg}`;
+  }
   db.collection('siteContent').doc('main').get().then(d=>{
     const phone = d.exists?(d.data().phoneRaw||DEFAULTS.phoneRaw):DEFAULTS.phoneRaw;
-    window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
-  }).catch(()=>window.open(`https://wa.me/${DEFAULTS.phoneRaw}?text=${msg}`,'_blank'));
+    window.open(buildUrl(phone),'_blank');
+  }).catch(()=>window.open(buildUrl(DEFAULTS.phoneRaw),'_blank'));
 }
 
 function selectService(name) {
