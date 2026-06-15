@@ -567,6 +567,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const API = 'https://desentupi-backend.onrender.com';
 
+// Cache do número do WhatsApp em memória (atualiza ao carregar)
+let WHATSAPP_PHONE = '5511999999999';
+
 // ── Imagens FIÉIS aos serviços (profissional trabalhando) ──
 const DEFAULTS = {
   brandName:'DESENTUPI PRO',phone:'(11) 99999-9999',phoneRaw:'5511999999999',email:'contato@desentupipro.com.br',cnpj:'CNPJ: 00.000.000/0001-00',anos:'10+',atendimentos:'500',ratingVal:'4.9',
@@ -633,6 +636,9 @@ async function renderPage() {
     const doc = await db.collection('siteContent').doc('main').get();
     if (doc.exists) conteudo = {...DEFAULTS, ...doc.data()};
   } catch(e) { console.log('Defaults'); }
+
+  // Atualiza número do WhatsApp em memória (USADO PELOS BOTÕES)
+  WHATSAPP_PHONE = conteudo.phoneRaw || '5511999999999';
 
   const titleSuffix = bairro ? ` ${bairro.cidade==='São Paulo' ? 'na '+bairro.nome : 'em '+bairro.cidade+(bairro.nome.includes('Centro')?'':' - '+bairro.nome)}` : '';
   document.getElementById('page-title').textContent = `Desentupidora 24h${titleSuffix} | ${conteudo.brandName}`;
@@ -723,18 +729,14 @@ function openWhatsApp(e) {
   if (e) e.preventDefault();
   const bairro = getCurrentBairro();
   const msg = encodeURIComponent(bairro?`Olá! Preciso de uma desentupidora ${bairro.cidade==='São Paulo'?'na '+bairro.nome:'em '+bairro.nome}.`:'Olá! Preciso de uma desentupidora.');
-  // Detecta mobile e usa formato correto
+  // Usa o número atual em cache (já carregado do Firebase)
+  const phone = WHATSAPP_PHONE;
+  // Tenta abrir app primeiro (mobile), depois web (desktop)
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  function buildUrl(phone) {
-    // Em mobile abre o app direto, em desktop abre web
-    return isMobile
-      ? `https://api.whatsapp.com/send?phone=${phone}&text=${msg}`
-      : `https://web.whatsapp.com/send?phone=${phone}&text=${msg}`;
-  }
-  db.collection('siteContent').doc('main').get().then(d=>{
-    const phone = d.exists?(d.data().phoneRaw||DEFAULTS.phoneRaw):DEFAULTS.phoneRaw;
-    window.open(buildUrl(phone),'_blank');
-  }).catch(()=>window.open(buildUrl(DEFAULTS.phoneRaw),'_blank'));
+  const url = isMobile
+    ? `https://api.whatsapp.com/send?phone=${phone}&text=${msg}`
+    : `https://web.whatsapp.com/send?phone=${phone}&text=${msg}`;
+  window.open(url, '_blank');
 }
 
 function selectService(name) {
