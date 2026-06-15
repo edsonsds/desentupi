@@ -729,14 +729,27 @@ function openWhatsApp(e) {
   if (e) e.preventDefault();
   const bairro = getCurrentBairro();
   const msg = encodeURIComponent(bairro?`Olá! Preciso de uma desentupidora ${bairro.cidade==='São Paulo'?'na '+bairro.nome:'em '+bairro.nome}.`:'Olá! Preciso de uma desentupidora.');
-  // Usa o número atual em cache (já carregado do Firebase)
   const phone = WHATSAPP_PHONE;
-  // Tenta abrir app primeiro (mobile), depois web (desktop)
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const url = isMobile
-    ? `https://api.whatsapp.com/send?phone=${phone}&text=${msg}`
-    : `https://web.whatsapp.com/send?phone=${phone}&text=${msg}`;
-  window.open(url, '_blank');
+  const ua = navigator.userAgent;
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+  const isMobile = isIOS || isAndroid;
+  let url;
+  if (isIOS) {
+    // Safari iOS: usa esquema whatsapp:// que abre o app direto
+    url = `whatsapp://send?phone=${phone}&text=${msg}`;
+  } else if (isAndroid) {
+    url = `https://api.whatsapp.com/send?phone=${phone}&text=${msg}`;
+  } else {
+    url = `https://web.whatsapp.com/send?phone=${phone}&text=${msg}`;
+  }
+  // No iOS Safari: redireciona a janela atual (window.open é bloqueado)
+  // No desktop e Android: abre nova aba
+  if (isIOS) {
+    window.location.href = url;
+  } else {
+    window.open(url, '_blank');
+  }
 }
 
 function selectService(name) {
