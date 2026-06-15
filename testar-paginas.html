@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testar 200 páginas — Desentupi Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#020812;color:#e2e8f0;font-family:'Inter',system-ui,sans-serif;padding:24px;min-height:100vh}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:24px;font-weight:800;margin-bottom:8px}
+.sub{color:#94a3b8;font-size:13px;margin-bottom:24px}
+.controls{background:#0a1628;border:1px solid #1a3a60;border-radius:14px;padding:20px;margin-bottom:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn{background:linear-gradient(135deg,#2563eb,#22d3ee);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:#0a1628;border:1px solid #1a3a60;border-radius:12px;padding:16px;text-align:center}
+.stat-val{font-size:28px;font-weight:800;letter-spacing:-1px}
+.stat-lbl{font-size:11px;color:#94a3b8;letter-spacing:0.5px;text-transform:uppercase;margin-top:4px}
+.progress{background:#0a1628;border:1px solid #1a3a60;border-radius:10px;height:8px;overflow:hidden;margin-bottom:20px}
+.progress-bar{background:linear-gradient(90deg,#2563eb,#22d3ee);height:100%;width:0%;transition:width 0.3s}
+.results{background:#0a1628;border:1px solid #1a3a60;border-radius:14px;overflow:hidden;max-height:600px;overflow-y:auto}
+.result-item{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #1a3a60;font-size:13px}
+.result-item:last-child{border:none}
+.result-status{width:24px;flex-shrink:0;text-align:center}
+.result-status.ok{color:#22c55e}
+.result-status.err{color:#ef4444}
+.result-status.pending{color:#64748b}
+.result-url{color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.result-url a{color:#3b82f6;text-decoration:none}
+.result-url a:hover{text-decoration:underline}
+.filter-btns{display:flex;gap:6px}
+.filter-btn{background:rgba(37,99,235,0.1);color:#3b82f6;border:1px solid rgba(37,99,235,0.3);padding:8px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit}
+.filter-btn.active{background:#2563eb;color:#fff}
+.base-url-input{flex:1;min-width:200px;background:#020812;border:1px solid #1a3a60;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:13px;outline:none;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧪 Testador de 200 páginas</h1>
+  <div class="sub">Verifica se todas as páginas dos bairros estão funcionando</div>
+
+  <div class="controls">
+    <input class="base-url-input" id="base-url" value="https://desentupi.vercel.app" placeholder="URL base do site"/>
+    <button class="btn" id="btn-start" onclick="iniciar()">▶️ Iniciar teste</button>
+    <button class="btn" id="btn-stop" onclick="parar()" disabled style="background:#ef4444">⏸️ Parar</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total</div></div>
+    <div class="stat"><div class="stat-val" id="s-ok" style="color:#22c55e">0</div><div class="stat-lbl">✅ Funcionando</div></div>
+    <div class="stat"><div class="stat-val" id="s-err" style="color:#ef4444">0</div><div class="stat-lbl">❌ Com erro</div></div>
+    <div class="stat"><div class="stat-val" id="s-pending" style="color:#64748b">200</div><div class="stat-lbl">⏳ Pendente</div></div>
+  </div>
+
+  <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <div class="filter-btns" style="margin-bottom:14px">
+    <button class="filter-btn active" onclick="filtrar('all',this)">Todas</button>
+    <button class="filter-btn" onclick="filtrar('ok',this)">Funcionando</button>
+    <button class="filter-btn" onclick="filtrar('err',this)">Com erro</button>
+  </div>
+
+  <div class="results" id="results"></div>
+</div>
+
+<script src="bairros.js"></script>
+<script>
+let stopped = false;
+let results = {};
+let currentFilter = 'all';
+
+async function iniciar(){
+  const base = document.getElementById('base-url').value.replace(/\/$/, '');
+  const bairros = window.BAIRROS || [];
+  if (!bairros.length) { alert('Lista de bairros não carregada!'); return; }
+
+  stopped = false;
+  results = {};
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('btn-stop').disabled = false;
+  document.getElementById('s-total').textContent = bairros.length;
+  document.getElementById('s-ok').textContent = 0;
+  document.getElementById('s-err').textContent = 0;
+  document.getElementById('s-pending').textContent = bairros.length;
+  document.getElementById('progress-bar').style.width = '0%';
+
+  renderResults(bairros, base);
+
+  // Testa 5 em paralelo para não sobrecarregar
+  const chunkSize = 5;
+  let done = 0;
+  for (let i = 0; i < bairros.length; i += chunkSize) {
+    if (stopped) break;
+    const chunk = bairros.slice(i, i + chunkSize);
+    await Promise.all(chunk.map(async b => {
+      const url = `${base}/desentupidora-${b.slug}.html`;
+      try {
+        const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+        results[b.slug] = res.ok ? 'ok' : 'err';
+      } catch {
+        results[b.slug] = 'err';
+      }
+      done++;
+      atualizarStats(bairros.length, done);
+      atualizarLinha(b.slug);
+    }));
+  }
+  document.getElementById('btn-start').disabled = false;
+  document.getElementById('btn-stop').disabled = true;
+}
+
+function parar(){
+  stopped = true;
+  document.getElementById('btn-start').disabled = false;
+  document.getElementById('btn-stop').disabled = true;
+}
+
+function atualizarStats(total, done){
+  const ok = Object.values(results).filter(s => s === 'ok').length;
+  const err = Object.values(results).filter(s => s === 'err').length;
+  const pending = total - done;
+  document.getElementById('s-ok').textContent = ok;
+  document.getElementById('s-err').textContent = err;
+  document.getElementById('s-pending').textContent = pending;
+  document.getElementById('progress-bar').style.width = `${(done/total)*100}%`;
+}
+
+function renderResults(bairros, base){
+  document.getElementById('results').innerHTML = bairros.map(b => `
+    <div class="result-item" data-slug="${b.slug}" data-status="pending">
+      <div class="result-status pending" id="status-${b.slug}">⏳</div>
+      <div class="result-url"><a href="${base}/desentupidora-${b.slug}.html" target="_blank">${b.nome} (${b.regiao}) — desentupidora-${b.slug}.html</a></div>
+    </div>
+  `).join('');
+}
+
+function atualizarLinha(slug){
+  const status = results[slug];
+  const el = document.getElementById(`status-${slug}`);
+  const row = document.querySelector(`[data-slug="${slug}"]`);
+  if (!el || !row) return;
+  row.setAttribute('data-status', status);
+  if (status === 'ok') { el.textContent = '✅'; el.className = 'result-status ok'; }
+  else { el.textContent = '❌'; el.className = 'result-status err'; }
+  aplicarFiltro();
+}
+
+function filtrar(f, btn){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  aplicarFiltro();
+}
+
+function aplicarFiltro(){
+  document.querySelectorAll('.result-item').forEach(row => {
+    const status = row.getAttribute('data-status');
+    if (currentFilter === 'all') row.style.display = '';
+    else if (currentFilter === status) row.style.display = '';
+    else row.style.display = 'none';
+  });
+}
+
+// Renderiza lista inicial
+if (window.BAIRROS) {
+  document.getElementById('s-total').textContent = window.BAIRROS.length;
+  document.getElementById('s-pending').textContent = window.BAIRROS.length;
+  renderResults(window.BAIRROS, document.getElementById('base-url').value);
+}
+</script>
+</body>
+</html>
