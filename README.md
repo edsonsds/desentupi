@@ -1,136 +1,168 @@
-# 🌐 Desentupi Pro — Sistema de 200 Páginas
+# 🎯 Pacote SEO Completo — Desentupi Pro
 
 ## 📦 O que vem nesse pacote
 
 | Arquivo | O que faz |
 |---|---|
-| `template-bairro.html` | Página única que vira 200 páginas (lê o bairro da URL) |
-| `bairros.js` | Lista dos 200 bairros |
-| `admin-site.html` | Painel para editar conteúdo de todas as páginas |
-| `index.html` | Redireciona para a página inicial |
-| `vercel.json` | Config para URLs amigáveis no Vercel |
-| `netlify.toml` | Config para URLs amigáveis no Netlify |
-| `gerador-sitemap.html` | Cria o sitemap.xml para o Google |
+| `template-bairro.html` | Template das 200 páginas (atualizado com Schema.org + Open Graph + meta tags) |
+| `sobre.html` | Página "Sobre a empresa" com história, valores e estatísticas |
+| `politica-privacidade.html` | Página LGPD (já existente) |
+| `sitemap.xml` | Mapa do site para o Google (203 URLs) |
+| `robots.txt` | Diz ao Google quais páginas indexar |
 
 ---
 
-## 🚀 Como hospedar (Vercel — 5 minutos)
+## 🚀 Como subir tudo
 
-### Passo 1 — Criar conta no Vercel
-1. Acesse https://vercel.com
-2. Clique em "Sign Up" → entre com sua conta do GitHub ou Google
+### Passo 1 — Substituir/Subir os 5 arquivos no GitHub
 
-### Passo 2 — Subir os arquivos
-1. No painel do Vercel, clique em "Add New" → "Project"
-2. Escolha "Upload" (em vez de importar do GitHub)
-3. Arraste a pasta com todos os arquivos
-4. Clique em "Deploy"
+Acesse: https://github.com/edsonsds/desentupi
 
-### Passo 3 — Pronto!
-Em 30 segundos seu site está no ar em uma URL tipo:
-- `https://desentupi-pro-abc123.vercel.app`
+**Arquivos para SUBSTITUIR (já existem):**
+- `template-bairro.html` → cola o novo conteúdo
 
-URLs que vão funcionar:
-- `https://seusite.vercel.app/` → página principal
-- `https://seusite.vercel.app/desentupidora-mooca` → página da Mooca
-- `https://seusite.vercel.app/desentupidora-tatuape` → Tatuapé
-- `https://seusite.vercel.app/admin` → painel admin
+**Arquivos NOVOS (subir):**
+- `sobre.html`
+- `politica-privacidade.html` (se ainda não subiu)
+- `sitemap.xml`
+- `robots.txt`
 
----
+### Passo 2 — Aguardar Vercel republicar (30-60 segundos)
 
-## 🎨 Como editar o conteúdo
+### Passo 3 — Verificar
 
-1. Acesse `seusite.vercel.app/admin`
-2. Edite:
-   - **Contato:** telefone, WhatsApp, email
-   - **Marca:** nome, CNPJ, anos no mercado
-   - **Imagens:** URL das fotos (use imgur.com ou imgbb.com para subir as suas)
-   - **Textos:** história da empresa
-   - **Serviços:** 8 cards com ícones, fotos e descrições
-   - **Equipamentos:** seus equipamentos
-   - **Depoimentos:** clientes reais
-   - **FAQ:** perguntas comuns
-3. Clique em **"💾 Salvar alterações"**
-4. As **200 páginas atualizam automaticamente!**
+```
+https://desentupi.vercel.app/sobre.html
+https://desentupi.vercel.app/politica-privacidade.html
+https://desentupi.vercel.app/sitemap.xml
+https://desentupi.vercel.app/robots.txt
+```
 
 ---
 
-## 🖼️ Como trocar as fotos
+## 🔍 O que melhorou tecnicamente
 
-As fotos atuais vêm do Unsplash (banco gratuito). Para usar fotos suas:
+### ✅ Schema.org (LocalBusiness)
+Código JSON-LD invisível que diz ao Google:
+- Você é uma empresa local de desentupimento
+- Em São Paulo
+- Aberto 24h, todos os dias
+- Atende a Grande SP, ABC, etc.
+- Tem 4.9 estrelas
+- Oferece os serviços (vaso, pia, hidrojateamento...)
 
-### Opção 1 — Imgur (mais fácil, sem cadastro)
-1. Acesse https://imgur.com
-2. Clique em "New post"
-3. Arraste sua foto
-4. Quando subir, clique com botão direito na foto → "Copiar endereço da imagem"
-5. Cole essa URL no painel admin
+**Resultado:** Google entende melhor e pode mostrar **rich snippets** (estrelas, horário, telefone) direto nos resultados.
 
-### Opção 2 — ImgBB
-1. Acesse https://imgbb.com
-2. "Start uploading" → escolha a foto
-3. Copie o "Direct link"
-4. Cole no painel admin
+### ✅ Open Graph (preview no WhatsApp)
+Quando alguém compartilhar o link no WhatsApp, vai aparecer:
+- Imagem grande
+- Título "Desentupidora 24h em [Bairro] | Desentupi Pro"
+- Descrição apelativa
 
-### Tamanhos recomendados:
-- **Hero (fundo):** 1600x900
-- **Sobre nós:** 900x675
-- **Serviços/Equipamentos:** 600x400
+### ✅ Meta tags otimizadas
+- `geo.region`, `geo.position` → diz ao Google que você é de São Paulo
+- `canonical` → evita conteúdo duplicado
+- `robots` → permite indexação completa
+- Cada página de bairro tem **título único, descrição única, keywords únicas**
+
+### ✅ Sitemap.xml
+Lista organizada de **todas as 203 páginas** (200 bairros + sobre + política + home) com prioridades. O Google indexa mais rápido.
+
+### ✅ robots.txt
+- Permite indexação geral
+- Bloqueia o admin e testador (não devem aparecer no Google)
+- Aponta para o sitemap
+
+### ✅ Página Sobre
+- Conta a história da empresa
+- Mostra valores (agilidade, transparência, etc.)
+- Estatísticas em destaque
+- Schema.org de AboutPage
+- Link no rodapé de todas as páginas
 
 ---
 
-## 📍 Comprar domínio próprio (opcional)
+## 📈 Próximos passos para aparecer no Google
 
-Quando quiser ter `desentupipro.com.br` em vez de `seusite.vercel.app`:
-
-1. Compre o domínio em https://registro.br (~R$ 40/ano)
-2. No Vercel, clique no seu projeto → "Settings" → "Domains"
-3. Adicione o domínio
-4. O Vercel mostra 2 registros DNS para configurar no Registro.br
-5. Em 1-24 horas, seu site responde no domínio próprio
-
----
-
-## 🔍 Mandar o site para o Google indexar
-
-Depois de no ar:
-
+### 1️⃣ Google Search Console (essencial)
 1. Acesse https://search.google.com/search-console
-2. Adicione seu site
-3. Acesse `gerador-sitemap.html` no seu site
-4. Copie o XML gerado
-5. Salve como `sitemap.xml` e suba no Vercel
-6. No Search Console: "Sitemaps" → adicione `seusite.com.br/sitemap.xml`
+2. Adicione propriedade: `https://desentupi.vercel.app`
+3. Verifique a propriedade (eles te dão um arquivo HTML para subir)
+4. Vá em **Sitemaps** → adicione `sitemap.xml`
+5. Aguarde — em 1-7 dias o Google começa a indexar as 200 páginas
 
-Em alguns dias/semanas, as 200 páginas começam a aparecer no Google.
+### 2️⃣ Google Meu Negócio (MUITO importante)
+1. Acesse https://business.google.com
+2. Crie perfil
+3. Endereço de São Paulo (pode ser comercial)
+4. Categoria: "Empresa de desentupimento"
+5. Foto, horário 24h, telefone, site
+6. **Foque em conseguir avaliações 5 estrelas** — esse é o fator #1 para aparecer
 
----
+### 3️⃣ Criar imagem de preview para WhatsApp
+O Open Graph aponta para `https://desentupi.vercel.app/og-preview.jpg` mas o arquivo ainda não existe.
 
-## 🔥 Firebase — primeiro acesso
+**Crie uma imagem 1200x630px com:**
+- Logo da Desentupi Pro
+- "Desentupidora 24h"
+- "Atendimento em toda Grande SP"
+- Foto profissional de fundo
 
-A primeira vez que abrir o admin, ele cria o documento no Firebase automaticamente com os dados padrão. Pode levar 2-3 segundos.
+Suba como `og-preview.jpg` no repositório do GitHub.
 
-Caminho no Firebase Console:
-- Firestore Database → collection `siteContent` → document `main`
-
----
-
-## ❓ Dúvidas comuns
-
-**P: As 200 páginas são realmente 200 arquivos?**
-R: Não. É 1 template inteligente que muda o conteúdo conforme o bairro da URL. Mais leve e fácil de manter.
-
-**P: O Google vai entender que são páginas diferentes?**
-R: Sim. Cada URL gera um título, descrição e meta tags únicos. O Google indexa como 200 páginas separadas.
-
-**P: Posso adicionar mais bairros depois?**
-R: Sim. Edite o arquivo `bairros.js` e adicione novos. Cada um vira uma página automaticamente.
-
-**P: E se eu trocar uma foto no admin, demora pra atualizar?**
-R: Atualiza instantaneamente. Quando alguém abre qualquer página, ela busca o conteúdo mais recente do Firebase.
+### 4️⃣ Comprar domínio próprio
+Quando puder, compre `desentupipro.com.br` no registro.br (~R$ 40/ano):
+- Vai aparecer melhor no Google que `.vercel.app`
+- Passa profissionalismo
+- Configure no Vercel em Settings → Domains
 
 ---
 
-## 🛡️ Segurança do painel admin
+## 🧪 Como verificar se ficou tudo certo
 
-Atualmente o admin está aberto em `/admin`. Quando quiser proteger com senha, me avise — posso adicionar login com Firebase Auth.
+### Schema.org
+1. Abra: https://search.google.com/test/rich-results
+2. Cole uma URL sua, ex: `https://desentupi.vercel.app/desentupidora-mooca.html`
+3. Tem que dar **válido** e mostrar o LocalBusiness
+
+### Open Graph
+1. Abra: https://www.opengraph.xyz/
+2. Cole sua URL
+3. Vai mostrar como vai aparecer no WhatsApp
+
+### Mobile-friendly
+1. Abra: https://search.google.com/test/mobile-friendly
+2. Cole sua URL
+3. Tem que dar **mobile-friendly** ✅
+
+### Velocidade
+1. Abra: https://pagespeed.web.dev
+2. Cole sua URL
+3. Procure ter nota acima de 90 (em mobile e desktop)
+
+---
+
+## 📊 Resultado esperado
+
+**Após 7-30 dias:**
+- Google indexa as 200 páginas
+- Aparece em buscas longas tipo "desentupidora 24h Mooca"
+
+**Após 60-90 dias (com Meu Negócio + avaliações):**
+- Aparece em buscas locais "desentupidora perto de mim"
+- Estrelas aparecem no resultado da busca
+- Primeiros chamados orgânicos chegam
+
+**Após 6 meses:**
+- Primeira página do Google para várias buscas
+- Volume orgânico consistente
+
+---
+
+## 🆘 Suporte
+
+Algum problema? Me chama e te ajudo com:
+- Configuração do Search Console
+- Criação da imagem og-preview.jpg
+- Análise de erros de indexação
+- Conversão do domínio próprio

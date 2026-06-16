@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin-site.html
+Disallow: /testar-paginas.html
+
+Sitemap: https://desentupi.vercel.app/sitemap.xml
