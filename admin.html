@@ -111,7 +111,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-se
 .site-link:hover{background:rgba(37,99,235,0.08)}
 .site-status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
 
-.site-section{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:14px;padding:22px;display:none;width:100%;box-sizing:border-box}
+.site-section{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:14px;padding:22px 22px 32px;display:none;width:100%;box-sizing:border-box}
 .site-section.active{display:block}
 .site-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)}
 .site-section-title{font-size:15px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:8px}
@@ -149,9 +149,9 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-se
 .btn-add-site{width:100%;background:rgba(37,99,235,0.06);color:var(--blue-l);border:1.5px dashed rgba(37,99,235,0.3);padding:13px;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
 .btn-add-site:hover{background:rgba(37,99,235,0.12);border-color:var(--blue-l)}
 
-.site-save-bar{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,rgba(2,8,18,0.85) 30%,rgba(2,8,18,0.98));padding:24px 0 14px;margin-top:8px;display:flex;justify-content:flex-end;gap:10px;z-index:5;backdrop-filter:blur(10px)}
-.btn-save-site{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;border:none;padding:12px 28px;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;box-shadow:0 6px 18px rgba(34,197,94,0.3);transition:all 0.15s}
-.btn-save-site:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(34,197,94,0.4)}
+.site-save-bar{position:fixed;bottom:24px;right:24px;display:flex;justify-content:flex-end;gap:10px;z-index:50}
+.btn-save-site{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;border:none;padding:14px 28px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;box-shadow:0 12px 32px rgba(34,197,94,0.4),0 0 0 1px rgba(34,197,94,0.3);transition:all 0.15s}
+.btn-save-site:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(34,197,94,0.55)}
 .btn-cancel-site{background:transparent;color:var(--txt3);border:1px solid var(--border2);padding:12px 22px;border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
 
 .empty-state{padding:40px 20px;text-align:center;color:var(--txt3);font-size:12px;border:1.5px dashed var(--border);border-radius:12px}
@@ -712,7 +712,7 @@ nav{padding:12px 0;flex:1}
 </div>
 
 <!-- ═══════════ ANALYTICS PAGE ═══════════ -->
-<div class="page" id="page-analytics" style="padding:20px 24px 40px;display:none">
+<div class="page" id="page-analytics" style="padding:20px 24px 100px;display:none">
   <div class="site-hero" style="margin-bottom:18px">
     <div class="site-hero-text">
       <div class="site-hero-title">📈 Analytics do Site</div>
@@ -837,7 +837,7 @@ nav{padding:12px 0;flex:1}
 </div>
 
 <!-- ═══════════ SITE ADMIN PAGE ═══════════ -->
-<div class="page" id="page-site" style="padding:14px 20px 40px;display:none">
+<div class="page" id="page-site" style="padding:14px 20px 100px;display:none">
 
   <div class="site-shell">
     <!-- Sidebar compacto de seções -->
@@ -1022,7 +1022,10 @@ nav{padding:12px 0;flex:1}
           </div>
         </div>
         <div id="servicos-list"></div>
-        <button class="btn-add-site" onclick="addServico()">+ Adicionar novo serviço</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn-add-site" onclick="addServico()" style="flex:1">+ Adicionar novo serviço</button>
+          <button class="btn-add-site" onclick="loadServicosPadrao()" style="flex:0 0 auto;background:rgba(34,197,94,0.08);color:var(--green-l);border-color:rgba(34,197,94,0.3)">🔄 Carregar 8 serviços padrão</button>
+        </div>
       </div>
 
       <!-- Equipamentos -->
@@ -1945,6 +1948,25 @@ function addServico(){
   siteContent.servicos.push({title:'Novo serviço',desc:'',icon:'🔧'});
   renderServicos();
   updateSiteCounts();
+}
+
+function loadServicosPadrao(){
+  if(siteContent.servicos && siteContent.servicos.length > 0){
+    if(!confirm('Já existem serviços cadastrados. Deseja SUBSTITUIR todos pelos 8 padrão?')) return;
+  }
+  siteContent.servicos = [
+    {title:'Desentupimento de Vaso Sanitário', desc:'Resolvemos entupimentos em vasos sanitários com equipamentos profissionais e técnica certa. Sem quebra, sem sujeira.', icon:'🚽'},
+    {title:'Desentupimento de Pia', desc:'Pia da cozinha ou banheiro entupida? Resolvemos em minutos com hidrojateamento e ferramentas especializadas.', icon:'🚰'},
+    {title:'Desentupimento de Ralo', desc:'Ralos de banheiro, lavanderia ou cozinha entupidos. Removemos cabelos, gorduras e detritos sem danificar a tubulação.', icon:'🌀'},
+    {title:'Desentupimento de Esgoto', desc:'Desentupimento de esgotos residenciais e comerciais. Localizamos e resolvemos o problema na raiz.', icon:'🏗️'},
+    {title:'Hidrojateamento', desc:'Limpeza profunda de tubulações com água em alta pressão. Remove gordura, raízes e qualquer obstrução acumulada.', icon:'💧'},
+    {title:'Caça Vazamentos', desc:'Localizamos vazamentos sem quebrar paredes ou pisos. Equipamento de detecção eletrônica de última geração.', icon:'🔍'},
+    {title:'Limpeza de Caixa de Gordura', desc:'Limpeza completa de caixas de gordura residenciais e comerciais. Evita entupimentos e mau cheiro.', icon:'🧴'},
+    {title:'Reparo de Canos', desc:'Conserto de tubulações com vazamentos, rachaduras ou estouros. Atendimento rápido para emergências.', icon:'🔧'},
+  ];
+  renderServicos();
+  updateSiteCounts();
+  showToast('✅ 8 serviços padrão carregados! Clique em "Salvar alterações" para aplicar.');
 }
 function rmServico(i){ siteContent.servicos.splice(i,1); renderServicos(); updateSiteCounts(); }
 function upServico(i,f,v){ siteContent.servicos[i][f] = v; }
