@@ -744,6 +744,31 @@ async function renderPage() {
   // Atualiza número do WhatsApp em memória (USADO PELOS BOTÕES)
   WHATSAPP_PHONE = conteudo.phoneRaw || '5511999999999';
 
+  // ── Google Analytics (carrega dinamicamente se gaId estiver configurado) ──
+  if(conteudo.gaId && conteudo.gaId.startsWith('G-') && !window.gaLoaded){
+    window.gaLoaded = true;
+    const gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${conteudo.gaId}`;
+    document.head.appendChild(gaScript);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ dataLayer.push(arguments); };
+    gtag('js', new Date());
+    gtag('config', conteudo.gaId, {
+      page_path: window.location.pathname,
+      page_title: bairro ? `Desentupidora - ${bairro.nome}` : 'Desentupidora 24h',
+      send_page_view: true
+    });
+    // Define custom parameters per page
+    if(bairro){
+      gtag('event', 'page_view', {
+        bairro: bairro.nome,
+        cidade: bairro.cidade,
+        slug: bairro.slug
+      });
+    }
+  }
+
   const titleSuffix = bairro ? ` ${bairro.cidade==='São Paulo' ? 'na '+bairro.nome : 'em '+bairro.cidade+(bairro.nome.includes('Centro')?'':' - '+bairro.nome)}` : '';
   const pageTitle = `Desentupidora 24h${titleSuffix} | ${conteudo.brandName}`;
   const pageDesc = `Desentupidora 24 horas${titleSuffix}. Atendimento rápido, equipamentos profissionais, garantia 90 dias. Ligue agora.`;
@@ -873,6 +898,16 @@ async function renderPage() {
 function openWhatsApp(e) {
   if (e) e.preventDefault();
   const bairro = getCurrentBairro();
+  
+  // ── Track GA event ──
+  if(window.gtag){
+    gtag('event', 'click_whatsapp', {
+      event_category: 'conversion',
+      event_label: bairro ? bairro.nome : 'home',
+      bairro: bairro ? bairro.nome : null
+    });
+  }
+  
   const msg = encodeURIComponent(bairro?`Olá! Preciso de uma desentupidora ${bairro.cidade==='São Paulo'?'na '+bairro.nome:'em '+bairro.nome}.`:'Olá! Preciso de uma desentupidora.');
   const phone = WHATSAPP_PHONE;
   const ua = navigator.userAgent;
@@ -898,9 +933,32 @@ function openWhatsApp(e) {
 }
 
 function selectService(name) {
+  // ── Track GA event ──
+  if(window.gtag){
+    const bairro = getCurrentBairro();
+    gtag('event', 'click_service', {
+      event_category: 'engagement',
+      event_label: name,
+      service_name: name,
+      bairro: bairro ? bairro.nome : null
+    });
+  }
   document.getElementById('f-tipo').value = name;
   document.getElementById('solicitar').scrollIntoView({behavior:'smooth'});
 }
+
+// ── Track phone clicks ──
+document.addEventListener('click', function(e){
+  const t = e.target.closest('a[href^="tel:"]');
+  if(t && window.gtag){
+    const bairro = getCurrentBairro();
+    gtag('event', 'click_phone', {
+      event_category: 'conversion',
+      event_label: bairro ? bairro.nome : 'home',
+      bairro: bairro ? bairro.nome : null
+    });
+  }
+});
 
 async function enviarChamado() {
   const nome=document.getElementById('f-nome').value.trim();
@@ -915,6 +973,18 @@ async function enviarChamado() {
     const res=await fetch(`${API}/api/calls`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientName:nome,clientPhone:tel,address:end,neighborhood:bairro?bairro.nome:'',description:document.getElementById('f-tipo').value+(document.getElementById('f-obs').value?' — '+document.getElementById('f-obs').value:''),urgency:document.getElementById('f-urgencia').value})});
     const data=await res.json();
     if (data.success) {
+      // ── Track conversion event ──
+      if(window.gtag){
+        const bairro = getCurrentBairro();
+        gtag('event', 'conversion', {
+          event_category: 'lead',
+          event_label: 'form_submit',
+          value: 1,
+          bairro: bairro ? bairro.nome : null,
+          service: document.getElementById('f-tipo').value || 'geral',
+          urgency: document.getElementById('f-urgencia').value
+        });
+      }
       document.querySelector('.form-wrap').innerHTML=`
         <div style="text-align:center;padding:40px 0">
           <div style="font-size:72px;margin-bottom:20px;animation:floatIcon 3s ease-in-out infinite">✅</div>
