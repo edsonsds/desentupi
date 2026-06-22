@@ -384,7 +384,8 @@ h2 .accent{background:linear-gradient(135deg,var(--blue-l),var(--cyan));-webkit-
 .btn-submit.loading::after{content:'';width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;margin-left:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease}
+.reveal{opacity:1;transform:translateY(0);transition:opacity 0.8s ease,transform 0.8s ease}
+.js-loaded .reveal:not(.visible){opacity:0;transform:translateY(30px)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
 @media (max-width:1024px){.hero-grid,.about-grid{grid-template-columns:1fr;gap:48px}.footer-grid{grid-template-columns:1fr}}
@@ -892,8 +893,15 @@ async function renderPage() {
   const regions = [...new Set(window.BAIRROS.map(b=>b.regiao))];
   document.getElementById('footer-areas').innerHTML = regions.map(r=>`<span class="footer-link">📍 ${r}</span>`).join('');
 
+  // Adiciona classe js-loaded só depois que tudo está pronto (assim o conteúdo aparece imediatamente se JS falhar)
+  document.body.classList.add('js-loaded');
   const obs = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:0.1});
-  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  document.querySelectorAll('.reveal').forEach(el=>{
+    obs.observe(el);
+    // Se já está visível na tela ao carregar, marca como visível
+    const rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight) el.classList.add('visible');
+  });
 }
 
 function openWhatsApp(e) {
