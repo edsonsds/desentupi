@@ -1,8 +1,39 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/desentupidora-:slug", "destination": "/template-bairro.html?b=:slug" },
-    { "source": "/admin", "destination": "/admin-site.html" },
-    { "source": "/", "destination": "/template-bairro.html" }
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/blog/index.html",
+      "destination": "/blog/",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml"
+        }
+      ]
+    }
   ]
 }
