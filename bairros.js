@@ -6343,3 +6343,20 @@ window.BAIRROS = [
   "satisfacao_local": 4.9
  }
 ];
+
+// ═══ Função para buscar bairro por slug ═══
+window.findBairro = function(slug) {
+  if (!slug) return null;
+  const s = String(slug).toLowerCase().trim();
+  return window.BAIRROS.find(b => {
+    const slugFull = (b.slug || '').toLowerCase();        // "desentupidora-mooca"
+    const slugShort = (b.slug_short || '').toLowerCase(); // "mooca"
+    return slugFull === s 
+        || slugShort === s 
+        || slugFull === 'desentupidora-' + s
+        || slugShort === s.replace('desentupidora-', '');
+  }) || null;
+};
+
+// ═══ Função utilitária (caso o template use) ═══
+window.getBairroBySlug = window.findBairro;
