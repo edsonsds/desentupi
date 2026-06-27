@@ -886,7 +886,7 @@ nav{padding:12px 0;flex:1}
       <div style="padding:8px 10px 12px;border-bottom:1px solid var(--border);margin-bottom:8px">
         <div style="font-size:11px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:6px;margin-bottom:4px">🌐 Conteúdo do site</div>
         <div style="font-size:9px;color:var(--green);display:flex;align-items:center;gap:5px"><div class="site-status-dot" style="width:6px;height:6px"></div>Sincronizado</div>
-        <a href="https://desentupi.vercel.app/" target="_blank" style="display:block;text-align:center;font-size:10px;color:var(--blue-l);text-decoration:none;padding:6px;border:1px solid rgba(37,99,235,0.25);border-radius:6px;margin-top:8px">🔗 Abrir site</a>
+        <a href="https://desentupi24horas.com.br/" target="_blank" style="display:block;text-align:center;font-size:10px;color:var(--blue-l);text-decoration:none;padding:6px;border:1px solid rgba(37,99,235,0.25);border-radius:6px;margin-top:8px">🔗 Abrir site</a>
       </div>
       <div class="site-sidebar-title">SEÇÕES</div>
       <div class="site-side-btn active" data-section="contato" onclick="switchSiteTab('contato',this)">
@@ -2267,7 +2267,7 @@ async function loadGAConfig(){
     setStatus('⏳', '#3b82f6', 'ID salvo, validando no site...', `${gaId} — Verificando se está ativo nas páginas`);
     // Validar fazendo fetch da homepage
     try{
-      const r = await fetch('https://desentupi.vercel.app/', {cache:'no-cache'});
+      const r = await fetch('https://desentupi24horas.com.br/', {cache:'no-cache'});
       const html = await r.text();
       if(html.includes(gaId)){
         setStatus('✅', '#22c55e', 'Funcionando!', `${gaId} está instalado nas 200 páginas. Dados aparecem no Google Analytics em 24-48h.`);
